@@ -12,12 +12,22 @@ using negocio;
 
 namespace frmArticulos
 {
-    public partial class fmwNuevoArticulo : Form
+    public partial class frmNuevoArticulo : Form
     {
-        public fmwNuevoArticulo()
+        private Articulo articulo = null;
+        public frmNuevoArticulo()
         {
             InitializeComponent();
         }
+
+        public frmNuevoArticulo(Articulo articulo)
+        {
+            InitializeComponent();
+            this.articulo = articulo;
+            Text = "Modificar Pokemon";
+
+        }
+
 
         private void btnCancelar_Click(object sender, EventArgs e)
         {
@@ -25,18 +35,33 @@ namespace frmArticulos
         }
 
         private void btnAceptar_Click(object sender, EventArgs e)
-        { 
-            Articulo article = new Articulo();
+        {
+            
             ArticuloNegocio negocio = new ArticuloNegocio();
             try
-            {
-                article.Codigo = txtbCodigoArticulo.Text;
-                article.Nombre = txtNombre.Text;
-                article.Descripcion = txtDescripcion.Text;
-                article.ImagenUrl = txtbImagenUrl.Text;
+            {   
+                if (articulo == null)
+                    articulo = new Articulo();
 
-                negocio.agregar(article);
-                MessageBox.Show("Articulo agregado exitosamente");
+                articulo.Codigo = txtbCodigoArticulo.Text;
+                articulo.Nombre = txtNombre.Text;
+                articulo.Descripcion = txtDescripcion.Text;
+                articulo.Marca = (Mark)cbxMarca.SelectedItem;
+                articulo.Categoria = (Category)cbxCategoria.SelectedItem;
+                articulo.ImagenUrl = txtbImagenUrl.Text;
+                articulo.Precio = decimal.Parse(txtbPrecio.Text);
+
+                if (articulo.Id != 0)
+                {
+                    negocio.modificar(articulo);
+                    MessageBox.Show("Articulo modificado exitosamente");
+                }
+                else
+                {
+                    negocio.agregar(articulo);
+                    MessageBox.Show("Articulo agregado exitosamente");
+                }
+                        
                 Close();
 
             }
@@ -46,5 +71,59 @@ namespace frmArticulos
                 throw ex;
             }
         }
+
+        private void fmwNuevoArticulo_Load(object sender, EventArgs e) //DESPLEGABLES//
+        {
+            CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
+            MarcaNegocio marcaNegocio = new MarcaNegocio();
+            try
+            {
+                
+                cbxCategoria.DataSource = categoriaNegocio.listar();
+                cbxCategoria.ValueMember = "Id";
+                cbxCategoria.DisplayMember = "Descripcion";
+                cbxMarca.DataSource = marcaNegocio.listar();
+                cbxMarca.ValueMember = "Id";
+                cbxMarca.DisplayMember = "Descripcion";
+
+
+                if (articulo != null)
+                {
+                    txtbCodigoArticulo.Text = articulo.Codigo.ToString();
+                    txtNombre.Text = articulo.Nombre;
+                    txtDescripcion.Text = articulo.Descripcion;
+                    cbxMarca.SelectedValue = articulo.Marca.Id;
+                    cbxCategoria.SelectedValue = articulo.Categoria.Id;
+                    txtbImagenUrl.Text = articulo.ImagenUrl;
+                    cargarImagen(articulo.ImagenUrl);
+                    txtbPrecio.Text = articulo.Precio.ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void txtbImagenUrl_Leave(object sender, EventArgs e) //IMAGEN CUANDO INSERTO//
+        {
+            cargarImagen(txtbImagenUrl.Text);
+            
+        }
+
+        private void cargarImagen(string imagen) //NECESARIO PARA PREVISUALIZAR IMAGEN//
+        {
+            try
+            {
+                pbxArticulos.Load(imagen);
+            }
+            catch (Exception ex)
+            {
+                pbxArticulos.Load("https://efectocolibri.com/wp-content/uploads/2021/01/placeholder.png");
+            }
+        }
     }
+
 }

@@ -41,6 +41,7 @@ namespace frmArticulos
                 listaArticulo = negocio.listar();
                 dgvArticulos.DataSource = listaArticulo;
                 dgvArticulos.Columns["ImagenUrl"].Visible = false;
+                dgvArticulos.Columns["Id"].Visible = false;   
                 cargarImagen(listaArticulo[0].ImagenUrl);
 
             }
@@ -67,8 +68,56 @@ namespace frmArticulos
 
         private void btnNuevo_Click(object sender, EventArgs e)
         {
-            fmwNuevoArticulo alta = new fmwNuevoArticulo();
+            frmNuevoArticulo alta = new frmNuevoArticulo();
             alta.ShowDialog();
+            cargar(); //METODO PARA QUE SE AGREGUE Y REFRESHEE
+        }
+
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+            Articulo seleccionado;
+            seleccionado = (Articulo)dgvArticulos.CurrentRow.DataBoundItem;
+
+            frmNuevoArticulo modificar = new frmNuevoArticulo(seleccionado);
+            modificar.ShowDialog();
+            cargar();
+        }
+
+
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            Eliminar();
+            
+        }
+
+        //METODOS//
+        private void Eliminar()
+        {
+            ArticuloNegocio negocio = new ArticuloNegocio();
+            Articulo seleccionado;
+
+            try
+            {
+                DialogResult respuesta = MessageBox.Show("¿Desea eliminar el articulo?", "Eliminando Articulo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (respuesta == DialogResult.Yes)
+                {
+                    seleccionado = (Articulo)dgvArticulos.CurrentRow.DataBoundItem;
+                    negocio.eliminacionFisica(seleccionado.Id);
+                    MessageBox.Show("Articulo Eliminado");
+                    cargar();
+
+                }
+                
+                
+                
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+            }
+
         }
     }
 }
