@@ -9,12 +9,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using dominio;
 using negocio;
+using System.IO;
+using System.Configuration;
 
 namespace frmArticulos
 {
     public partial class frmNuevoArticulo : Form
     {
         private Articulo articulo = null;
+        private OpenFileDialog archivo = null;
+
+
         public frmNuevoArticulo()
         {
             InitializeComponent();
@@ -60,6 +65,10 @@ namespace frmArticulos
                 {
                     negocio.agregar(articulo);
                     MessageBox.Show("Articulo agregado exitosamente");
+                }
+                if (archivo != null && !(txtbImagenUrl.Text.ToUpper().Contains("HTTP:"))) ;
+                {
+                    File.Copy(archivo.FileName, ConfigurationManager.AppSettings["carpeta-imagenes"] + archivo.SafeFileName);
                 }
                         
                 Close();
@@ -123,6 +132,18 @@ namespace frmArticulos
             {
                 pbxArticulos.Load("https://efectocolibri.com/wp-content/uploads/2021/01/placeholder.png");
             }
+        }
+
+        private void btnSubirImagen_Click(object sender, EventArgs e)
+        {
+            archivo = new OpenFileDialog();
+            archivo.Filter = "jpg|*.jpg; | jpeg|*.jpeg; | png|*.png";
+            if (archivo.ShowDialog() == DialogResult.OK)
+            {
+                txtbImagenUrl.Text = archivo.FileName;
+                cargarImagen(archivo.FileName);
+            }
+
         }
     }
 
