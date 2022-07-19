@@ -33,7 +33,7 @@ namespace frmArticulos
 
         }
 
-
+        //BUTTONS//
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -80,6 +80,20 @@ namespace frmArticulos
                 throw ex;
             }
         }
+
+        private void btnSubirImagen_Click(object sender, EventArgs e)
+        {
+            archivo = new OpenFileDialog();
+            archivo.Filter = "jpg|*.jpg; | jpeg|*.jpeg; | png|*.png";
+            if (archivo.ShowDialog() == DialogResult.OK)
+            {
+                txtbImagenUrl.Text = archivo.FileName;
+                cargarImagen(archivo.FileName);
+            }
+
+        }
+
+        //METODOS//
 
         private void fmwNuevoArticulo_Load(object sender, EventArgs e) //DESPLEGABLES//
         {
@@ -134,17 +148,7 @@ namespace frmArticulos
             }
         }
 
-        private void btnSubirImagen_Click(object sender, EventArgs e)
-        {
-            archivo = new OpenFileDialog();
-            archivo.Filter = "jpg|*.jpg; | jpeg|*.jpeg; | png|*.png";
-            if (archivo.ShowDialog() == DialogResult.OK)
-            {
-                txtbImagenUrl.Text = archivo.FileName;
-                cargarImagen(archivo.FileName);
-            }
-
-        }
+        
     }
 
 }
